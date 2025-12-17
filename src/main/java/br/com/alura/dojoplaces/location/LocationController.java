@@ -2,6 +2,7 @@ package br.com.alura.dojoplaces.location;
 
 import br.com.alura.dojoplaces.location.dto.*;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,14 +34,13 @@ public class LocationController {
         Location location = LocationMapper.toLocation(form);
         locationRepository.save(location);
 
-        return "redirect:/location/create";
+        return "redirect:/";
     }
 
     @GetMapping("/location/edit/{id}")
     public String edit(@PathVariable Long id, Model model) throws Exception {
 
         var location = locationRepository.findById(id).orElseThrow(Exception::new);
-
 
         model.addAttribute("locationEditFormDTO", LocationMapper.toLocationEditForm(location));
 
@@ -53,13 +53,22 @@ public class LocationController {
             System.out.println("Validation errors: " + result.getAllErrors());
             return edit(form.getId(), model);
         }
-        var location = this.locationRepository.findById(form.getId()) .orElseThrow(Exception::new);
+        var location = this.locationRepository.findById(form.getId()).orElseThrow(Exception::new);
 
         location.update(form);
 
         this.locationRepository.save(location);
 
         return edit(form.getId(), model);
+    }
+
+    @DeleteMapping("/location/delete/{id}")
+    public ResponseEntity delete(@PathVariable Long id) throws Exception {
+        var location = this.locationRepository.findById(id).orElseThrow(Exception::new);
+
+        this.locationRepository.delete(location);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/")
