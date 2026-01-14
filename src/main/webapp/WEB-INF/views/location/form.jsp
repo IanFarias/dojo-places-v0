@@ -80,6 +80,12 @@
     </div>
     <br/>
     <div class="input__container">
+        <label for="cep">CEP:</label>
+        <form:input path="cep"/>
+        <form:errors path="cep" cssStyle="color: red"/>
+    </div>
+    <br/>
+    <div class="input__container">
         <label>Bairro:</label>
         <form:input path="neighborhood"/>
         <form:errors path="neighborhood" cssStyle="color: red"/>
@@ -92,11 +98,73 @@
     </div>
     <br/>
     <br/>
+    <form:errors path="*" cssStyle="color: red" />
+    <br/>
+    <br/>
     <div class="button__container">
         <button class="button" type="submit">Cadastrar</button>
     </div>
 </form:form>
 
+<script>
+    const CEP_REGEX = /^[0-9]{8}$/;
+
+    document.getElementById('cep').addEventListener("blur", ({ target }) => {
+        searchCep(target.value);
+    });
+
+    function resetInputCEP() {
+        document.getElementById('neighborhood').value=("");
+        document.getElementById('city').value=("");
+    }
+
+    function callback(content) {
+        if("erro" in content) {
+            resetInputCEP();
+            alert("CEP não encontrado.");
+            return;
+        }
+
+        document.getElementById('city').value = content.localidade;
+        document.getElementById('neighborhood').value = content.bairro;
+    }
+
+    function searchCep(valor) {
+        const cep = valor.replace(/\D/g, '');
+
+        if (cep.length < 8) {
+            return;
+        }
+
+        if (!CEP_REGEX.test(cep)) {
+            resetInputCEP();
+            alert("Formato de CEP inválido.");
+            return;
+        }
+
+        fetch("https://viacep.com.br/ws/"+ cep + "/json/")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erro na requisição");
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.erro) {
+                    resetInputCEP();
+                    alert("CEP não encontrado.");
+                    return;
+                }
+
+                callback(data);
+            })
+            .catch(error => {
+                console.error(error);
+                resetInputCEP();
+                alert("Erro ao buscar o CEP.");
+            });
+    }
+</script>
 </body>
 </html>
 

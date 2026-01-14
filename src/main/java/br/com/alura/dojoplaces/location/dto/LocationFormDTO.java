@@ -22,6 +22,10 @@ public class LocationFormDTO implements Serializable {
     @Length(min = 1, max = 100, message = "Cidade não pode ser maior que 100 caracteres.")
     private String city;
 
+    @NotEmpty(message = "CEP não pode ser vazio.")
+    @Length(min = 8, max = 8, message = "CEP deve possuir 8 caracteres.")
+    private String cep;
+
     public LocationFormDTO() {
     }
 
@@ -56,4 +60,10 @@ public class LocationFormDTO implements Serializable {
     public void setCity(String city) {
         this.city = city;
     }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) { this.cep = cep; }
 }

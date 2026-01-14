@@ -25,13 +25,17 @@ public class LocationEditFormDTO implements Serializable {
     @Length(min = 1, max = 100, message = "Cidade não pode ser maior que 100 caracteres.")
     private String city;
 
+    @Length(min = 8, max = 8, message = "CEP deve possuir 8 caracteres.")
+    private String cep;
+
     public LocationEditFormDTO() {
     }
 
-    public LocationEditFormDTO(Long id, String name, String code, String neighborhood, String city) {
+    public LocationEditFormDTO(Long id, String name, String code, String cep, String neighborhood, String city) {
         this.id = id;
         this.name = name;
         this.code = code;
+        this.cep = cep;
         this.neighborhood = neighborhood;
         this.city = city;
     }
@@ -75,4 +79,8 @@ public class LocationEditFormDTO implements Serializable {
     public void setCity(String city) {
         this.city = city;
     }
+
+    public String getCep() { return this.cep = cep; }
+
+    public void setCep(String cep) { this.cep = cep; }
 }

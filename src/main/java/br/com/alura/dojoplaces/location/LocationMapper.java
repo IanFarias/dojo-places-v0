@@ -12,6 +12,7 @@ public class LocationMapper {
                 location.getCode(),
                 location.getNeighborhood(),
                 location.getCity(),
+                location.getCep(),
                 LocalDate.now(),
                 LocalDate.now()
         );
@@ -32,6 +33,7 @@ public class LocationMapper {
                 location.getId(),
                 location.getName(),
                 location.getCode(),
+                location.getCep(),
                 location.getNeighborhood(),
                 location.getCity()
         );

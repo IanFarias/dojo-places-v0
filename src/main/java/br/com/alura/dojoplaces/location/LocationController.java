@@ -6,16 +6,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
 public class LocationController {
-    private final LocationRepository locationRepository;
+    private final LocationService locationService;
 
-    public LocationController(LocationRepository locationRepository) {
-        this.locationRepository = locationRepository;
+    public LocationController(LocationService locationService) {
+        this.locationService = locationService;
     }
 
     @GetMapping("/location/create")
@@ -31,52 +32,52 @@ public class LocationController {
             return createLocation(form, model);
         }
 
-        Location location = LocationMapper.toLocation(form);
-        locationRepository.save(location);
+        try {
+            this.locationService.createLocal(form);
 
-        return "redirect:/";
+            return "redirect:/";
+        }catch (Exception e) {
+            result.addError(new ObjectError("codeExists", "Código já está cadastrado."));
+            return createLocation(form, model);
+        }
     }
 
     @GetMapping("/location/edit/{id}")
     public String edit(@PathVariable Long id, Model model) throws Exception {
+        var location = this.locationService.findLocationById(id);
 
-        var location = locationRepository.findById(id).orElseThrow(Exception::new);
-
-        model.addAttribute("locationEditFormDTO", LocationMapper.toLocationEditForm(location));
+        model.addAttribute("locationEditFormDTO", location);
 
         return "location/editForm";
     }
 
     @PostMapping("/location/edit/{id}")
-    public String update(@Valid LocationEditFormDTO form, BindingResult result, Model model) throws Exception {
+    public String update(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("locationEditFormDTO") LocationEditFormDTO form,
+            BindingResult result,
+            Model model
+    ) throws Exception {
+
         if (result.hasErrors()) {
-            System.out.println("Validation errors: " + result.getAllErrors());
-            return edit(form.getId(), model);
+            return "location/editForm";
         }
-        var location = this.locationRepository.findById(form.getId()).orElseThrow(Exception::new);
 
-        location.update(form);
+        this.locationService.update(form);
 
-        this.locationRepository.save(location);
-
-        return edit(form.getId(), model);
+        return "redirect:/location/edit/" + id;
     }
 
     @DeleteMapping("/location/delete/{id}")
     public ResponseEntity delete(@PathVariable Long id) throws Exception {
-        var location = this.locationRepository.findById(id).orElseThrow(Exception::new);
-
-        this.locationRepository.delete(location);
+        this.locationService.delete(id);
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/")
     public String listLocations(Model model) {
-        List<LocationListDTO> locationListDTOS = locationRepository.findAll()
-                .stream()
-                .map(LocationMapper::toLocationListDTO)
-                .toList();
+        List<LocationListDTO> locationListDTOS = this.locationService.listAll();
 
         model.addAttribute("locations", locationListDTOS);
 

@@ -4,7 +4,6 @@ import br.com.alura.dojoplaces.location.dto.LocationEditFormDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Entity
 public class Location {
@@ -14,11 +13,14 @@ public class Location {
 
     private String name;
 
+    @Column(unique = true, nullable = false)
     private String code;
 
     private String neighborhood;
 
     private String city;
+
+    private String cep;
 
     private LocalDate createdAt;
 
@@ -28,11 +30,12 @@ public class Location {
 
     }
 
-    public Location(String name, String code, String neighborhood, String city, LocalDate createdAt, LocalDate updatedAt) {
+    public Location(String name, String code, String neighborhood, String city, String cep, LocalDate createdAt, LocalDate updatedAt) {
         this.name = name;
         this.code = code;
         this.neighborhood = neighborhood;
         this.city = city;
+        this.cep = cep;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -42,6 +45,7 @@ public class Location {
         this.setCode(location.getCode());
         this.setName(location.getName());
         this.setNeighborhood(location.getNeighborhood());
+        this.setCep(location.getCep());
         this.setUpdatedAt(LocalDate.now());
     }
 
@@ -91,5 +95,13 @@ public class Location {
 
     public void setUpdatedAt(LocalDate updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 }
