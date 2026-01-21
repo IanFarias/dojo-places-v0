@@ -7,164 +7,123 @@
 <head>
     <title>Local | Cadastro</title>
     <style>
-
-        form {
-            max-width: 360px;
-        }
-
-        input {
-            height: 30px;
-        }
-
-        .input__container {
-            display: flex;
-            flex-direction: column;
-        }
-
         .button__container {
             display: flex;
-            flex-direction: column;
             gap: 8px;
         }
 
-        .button-secondary,
-        .button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 40px;
-            cursor: pointer;
-            border: none;
-            background-color: #4a4ad1;
-            color: white;
-            font-size: 16px;
-            border-radius: 6px;
-            text-decoration: none;
-        }
-
-        .button:hover {
-            background-color: #3333cb;
-        }
-
-        .button-secondary {
-            background-color: white;
-            color: #0b0b0b;
-            border: 1px solid darkgrey;
-        }
-
-        .button-secondary:hover{
-            background-color: darkgrey;
-            color: white;
-        }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
-<h1>Cadastro de Local</h1>
+    <main class="container py-5 d-flex flex-column align-items-center">
+        <h1 class="mb-4">Cadastrar novo local</h1>
 
-<br/>
-<br/>
+        <form:form modelAttribute="locationFormDTO" method="post" action="/location/create" cssClass="w-50 m-4">
 
-<form:form modelAttribute="locationFormDTO" method="post" action="/location/create">
-    <div class="input__container">
-        <label>Código:</label>
+            <div class="row">
+                <div class="col input__container">
+                    <label class="form-label">Código:</label>
 
-        <form:input path="code"/>
-        <form:errors path="code" cssStyle="color: red"/>
+                    <form:input path="code" cssClass="form-control"/>
+                    <form:errors path="code" cssStyle="color: red"/>
 
-    </div>
-    <br/>
-    <div class="input__container">
-        <label>Nome:</label>
-        <form:input path="name"/>
-        <form:errors path="name" cssStyle="color: red"/>
-    </div>
-    <br/>
-    <div class="input__container">
-        <label for="cep">CEP:</label>
-        <form:input path="cep"/>
-        <form:errors path="cep" cssStyle="color: red"/>
-    </div>
-    <br/>
-    <div class="input__container">
-        <label>Bairro:</label>
-        <form:input path="neighborhood"/>
-        <form:errors path="neighborhood" cssStyle="color: red"/>
-    </div>
-    <br/>
-    <div class="input__container">
-        <label>Cidade:</label>
-        <form:input path="city"/>
-        <form:errors path="city" cssStyle="color: red"/>
-    </div>
-    <br/>
-    <br/>
-    <form:errors path="*" cssStyle="color: red" />
-    <br/>
-    <br/>
-    <div class="button__container">
-        <button class="button" type="submit">Cadastrar</button>
-    </div>
-</form:form>
+                </div>
+                <div class="col input__container">
+                    <label class="form-label">Nome:</label>
+                    <form:input path="name" cssClass="form-control"/>
+                    <form:errors path="name" cssStyle="color: red"/>
+                </div>
+            </div>
 
-<script>
-    const CEP_REGEX = /^[0-9]{8}$/;
+            <br/>
+            <div class="input__container">
+                <label for="cep" class="form-label">CEP:</label>
+                <form:input path="cep" cssClass="form-control"/>
+                <form:errors path="cep" cssStyle="color: red"/>
+            </div>
+            <br/>
+           <div class="row">
+               <div class="col input__container">
+                   <label class="form-label">Bairro:</label>
+                   <form:input path="neighborhood" cssClass="form-control"/>
+                   <form:errors path="neighborhood" cssStyle="color: red"/>
+               </div>
+               <br/>
+               <div class="col input__container">
+                   <label class="form-label">Cidade:</label>
+                   <form:input path="city" cssClass="form-control"/>
+                   <form:errors path="city" cssStyle="color: red"/>
+               </div>
+           </div>
+            <span class="d-block mt-4"><form:errors path="" cssStyle="color: red" /></span>
+            <div class="button__container mt-5">
+                <button class="btn btn-primary btn-lg" type="submit">Cadastrar</button>
+                <a href="/" class="btn btn-light btn-lg" type="submit">Cancelar</a>
+            </div>
+        </form:form>
+    </main>
 
-    document.getElementById('cep').addEventListener("blur", ({ target }) => {
-        searchCep(target.value);
-    });
+    <script>
+        const CEP_REGEX = /^[0-9]{8}$/;
 
-    function resetInputCEP() {
-        document.getElementById('neighborhood').value=("");
-        document.getElementById('city').value=("");
-    }
+        document.getElementById('cep').addEventListener("blur", ({ target }) => {
+            searchCep(target.value);
+        });
 
-    function callback(content) {
-        if("erro" in content) {
-            resetInputCEP();
-            alert("CEP não encontrado.");
-            return;
+        function resetInputCEP() {
+            document.getElementById('neighborhood').value=("");
+            document.getElementById('city').value=("");
         }
 
-        document.getElementById('city').value = content.localidade;
-        document.getElementById('neighborhood').value = content.bairro;
-    }
-
-    function searchCep(valor) {
-        const cep = valor.replace(/\D/g, '');
-
-        if (cep.length < 8) {
-            return;
-        }
-
-        if (!CEP_REGEX.test(cep)) {
-            resetInputCEP();
-            alert("Formato de CEP inválido.");
-            return;
-        }
-
-        fetch("https://viacep.com.br/ws/"+ cep + "/json/")
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Erro na requisição");
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.erro) {
-                    resetInputCEP();
-                    alert("CEP não encontrado.");
-                    return;
-                }
-
-                callback(data);
-            })
-            .catch(error => {
-                console.error(error);
+        function callback(content) {
+            if("erro" in content) {
                 resetInputCEP();
-                alert("Erro ao buscar o CEP.");
-            });
-    }
-</script>
+                alert("CEP não encontrado.");
+                return;
+            }
+
+            document.getElementById('city').value = content.localidade;
+            document.getElementById('neighborhood').value = content.bairro;
+        }
+
+        function searchCep(valor) {
+            const cep = valor.replace(/\D/g, '');
+
+            if (cep.length < 8) {
+                return;
+            }
+
+            if (!CEP_REGEX.test(cep)) {
+                resetInputCEP();
+                alert("Formato de CEP inválido.");
+                return;
+            }
+
+            fetch("https://viacep.com.br/ws/"+ cep + "/json/")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Erro na requisição");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.erro) {
+                        resetInputCEP();
+                        alert("CEP não encontrado.");
+                        return;
+                    }
+
+                    callback(data);
+                })
+                .catch(error => {
+                    console.error(error);
+                    resetInputCEP();
+                    alert("Erro ao buscar o CEP.");
+                });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
 

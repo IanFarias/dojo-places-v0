@@ -6,10 +6,6 @@
 <head>
     <title>Local</title>
     <style>
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
         th, td {
             padding: 8px;
         }
@@ -25,11 +21,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
- <main>
-    <h1>Lista de Locais</h1>
-    <a href="/location/create">Cadastrar Novo Local</a>
+ <main class="container py-5">
+    <h1 class="fw-bold">Locais</h1>
+    <a href="/location/create" class="btn btn-primary mt-4">Cadastrar Novo Local</a>
     <br/><br/>
-    <table>
+    <table class="table align-middle table-bordered table-striped">
         <thead>
             <tr>
                 <th>ID</th>
@@ -38,7 +34,7 @@
                 <th>Cadastrada em</th>
                 <th>Atualizada em</th>
                 <th>Editar</th>
-                <th>Excluir</th>
+                <th class="center">Excluir</th>
             </tr>
         </thead>
         <tbody>
